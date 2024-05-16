@@ -6,11 +6,11 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
+    public Actor Player { get; set; }
+
     // Step 1: Add a public list of Actor type named Enemies
     public List<Actor> Enemies { get; private set; } = new List<Actor>();
 
-    // Step 1: Add a public Actor named Player
-    public Actor Player { get; private set; }
 
     private void Awake()
     {

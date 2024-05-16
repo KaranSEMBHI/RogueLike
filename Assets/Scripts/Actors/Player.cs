@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour, Controls.IPlayerActions
 {
     private Controls controls;
-    
 
     private void Awake()
     {
@@ -14,6 +13,10 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
 
     private void Start()
     {
+        // Instellen van de speler in de GameManager
+        GameManager.Get.Player = GetComponent<Actor>();
+
+        // Het aanpassen van de camerapositie
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
     }
 
@@ -39,7 +42,7 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
 
     public void OnExit(InputAction.CallbackContext context)
     {
-        
+
     }
 
     private void Move()
