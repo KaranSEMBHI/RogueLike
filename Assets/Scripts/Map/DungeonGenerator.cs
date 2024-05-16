@@ -7,6 +7,7 @@ public class DungeonGenerator : MonoBehaviour
     private int width, height;
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
+    public int maxEnemies; // Nieuw attribuut voor het maximum aantal vijanden
     List<Room> rooms = new List<Room>();
 
     public void SetSize(int width, int height)
@@ -26,6 +27,35 @@ public class DungeonGenerator : MonoBehaviour
         maxRooms = max;
     }
 
+    public void SetMaxEnemies(int max)
+    {
+        maxEnemies = max;
+    }
+
+    // Functie om vijanden in een kamer te plaatsen
+    private void PlaceEnemies(Room room, int maxEnemies)
+    {
+        // Het aantal vijanden dat we willen
+        int num = Random.Range(0, maxEnemies + 1);
+
+        for (int counter = 0; counter < num; counter++)
+        {
+            // De grenzen van de kamer zijn muren, dus voeg en trek 1 af
+            int x = Random.Range(room.X + 1, room.X + room.Width - 1);
+            int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
+
+            // Creëer verschillende vijanden
+            if (Random.value < 0.5f)
+            {
+                GameManager.Get.CreateActor("Tiger", new Vector2(x, y));
+            }
+            else
+            {
+                GameManager.Get.CreateActor("Bear", new Vector2(x, y));
+            }
+        }
+    }
+
     public void Generate()
     {
         rooms.Clear();
@@ -40,21 +70,18 @@ public class DungeonGenerator : MonoBehaviour
 
             var room = new Room(roomX, roomY, roomWidth, roomHeight);
 
-            // if the room overlaps with another room, discard it
+            // Als de kamer overlapt met een andere kamer, verwijder deze dan
             if (room.Overlaps(rooms))
             {
                 continue;
             }
 
-            // add tiles make the room visible on the tilemap
+            // Voeg tegels toe om de kamer zichtbaar te maken op de tilemap
             for (int x = roomX; x < roomX + roomWidth; x++)
             {
                 for (int y = roomY; y < roomY + roomHeight; y++)
                 {
-                    if (x == roomX
-                        || x == roomX + roomWidth - 1
-                        || y == roomY
-                        || y == roomY + roomHeight - 1)
+                    if (x == roomX || x == roomX + roomWidth - 1 || y == roomY || y == roomY + roomHeight - 1)
                     {
                         if (!TrySetWallTile(new Vector3Int(x, y)))
                         {
@@ -65,31 +92,34 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         SetFloorTile(new Vector3Int(x, y, 0));
                     }
-
                 }
             }
 
-            // create a coridor between rooms
+            // Creëer een gang tussen kamers
             if (rooms.Count != 0)
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
 
             rooms.Add(room);
+
+            // Plaats vijanden in de kamer
+            PlaceEnemies(room, maxEnemies);
         }
-        var player = MapManager.Get.CreateActor("Player", rooms[0].Center());
+
+        var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
     }
 
     private bool TrySetWallTile(Vector3Int pos)
     {
-        // if this is a floor, it should not be a wall
+        // Als dit een vloertegel is, mag het geen muur zijn
         if (MapManager.Get.FloorMap.GetTile(pos))
         {
             return false;
         }
         else
         {
-            // if not, it can be a wall
+            // Zo niet, dan kan het een muur zijn
             MapManager.Get.ObstacleMap.SetTile(pos, MapManager.Get.WallTile);
             return true;
         }
@@ -97,12 +127,12 @@ public class DungeonGenerator : MonoBehaviour
 
     private void SetFloorTile(Vector3Int pos)
     {
-        // this tile should be walkable, so remove every obstacle
+        // Deze tegel moet begaanbaar zijn, dus verwijder elk obstakel
         if (MapManager.Get.ObstacleMap.GetTile(pos))
         {
             MapManager.Get.ObstacleMap.SetTile(pos, null);
         }
-        // set the floor tile
+        // Stel de vloertegel in
         MapManager.Get.FloorMap.SetTile(pos, MapManager.Get.FloorTile);
     }
 
@@ -114,21 +144,21 @@ public class DungeonGenerator : MonoBehaviour
 
         if (Random.value < 0.5f)
         {
-            // move horizontally, then vertically
+            // Beweeg horizontaal, dan verticaal
             tunnelCorner = new Vector2Int(newRoomCenter.x, oldRoomCenter.y);
         }
         else
         {
-            // move vertically, then horizontally
+            // Beweeg verticaal, dan horizontaal
             tunnelCorner = new Vector2Int(oldRoomCenter.x, newRoomCenter.y);
         }
 
-        // Generate the coordinates for this tunnel
+        // Genereer de coördinaten voor deze gang
         List<Vector2Int> tunnelCoords = new List<Vector2Int>();
         BresenhamLine.Compute(oldRoomCenter, tunnelCorner, tunnelCoords);
         BresenhamLine.Compute(tunnelCorner, newRoomCenter, tunnelCoords);
 
-        // Set the tiles for this tunnel
+        // Stel de tegels voor deze gang in
         for (int i = 0; i < tunnelCoords.Count; i++)
         {
             SetFloorTile(new Vector3Int(tunnelCoords[i].x, tunnelCoords[i].y));

@@ -165,6 +165,7 @@ MonoBehaviour:
   roomMaxSize: 10
   roomMinSize: 6
   maxRooms: 30
+  maxEnemies: 2
 --- !u!156049354 &408639669
 Grid:
   m_ObjectHideFlags: 0
