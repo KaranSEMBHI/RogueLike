@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3589657144698759958}
   - component: {fileID: 4218918047581163592}
   - component: {fileID: 3735347767585025207}
+  - component: {fileID: 2458025243316057220}
   m_Layer: 0
   m_Name: Bear
   m_TagString: Untagged
@@ -100,6 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FieldOfView: []
   FieldOfViewRange: 8
+  maxHitPoints: 16
+  hitPoints: 16
+  defense: 1
+  power: 4
 --- !u!114 &3735347767585025207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,5 +115,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 475eaa454c99c0041a31f6bf605fd0d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2458025243316057220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3210250828539464393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af028bd8c61434a4f8119d19adbf4b0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

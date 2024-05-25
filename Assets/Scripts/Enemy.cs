@@ -52,8 +52,21 @@ public class Enemy : MonoBehaviour
             // If the enemy was not fighting, it should be fighting now
             IsFighting = true;
 
-            // Call MoveAlongPath with the gridPosition
-            MoveAlongPath(gridPosition);
+            // Calculate distance between enemy and target
+            float distanceToTarget = Vector3.Distance(transform.position, Target.transform.position);
+
+            // Check if distance is less than 1.5 to attack
+            if (distanceToTarget < 1.5f)
+            {
+                // Perform attack
+                Action.Hit(GetComponent<Actor>(), Target);
+            }
+            else
+            {
+                // Move along the path to the target
+                MoveAlongPath(gridPosition);
+            }
         }
     }
+
 }

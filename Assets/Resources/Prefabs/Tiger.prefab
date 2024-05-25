@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3764531773317948292}
   - component: {fileID: 7323455223400159644}
   - component: {fileID: 2966555067062518079}
+  - component: {fileID: 6618410714526216796}
   m_Layer: 0
   m_Name: Tiger
   m_TagString: Untagged
@@ -100,6 +101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FieldOfView: []
   FieldOfViewRange: 8
+  maxHitPoints: 8
+  hitPoints: 8
+  defense: 0
+  power: 3
 --- !u!114 &2966555067062518079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,5 +115,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 475eaa454c99c0041a31f6bf605fd0d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6618410714526216796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2757033737177728349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af028bd8c61434a4f8119d19adbf4b0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

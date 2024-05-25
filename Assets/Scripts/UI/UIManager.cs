@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -8,48 +10,36 @@ public class UIManager : MonoBehaviour
     public GameObject HealthBar;
     public GameObject Messages;
 
-    private HealthBar healthBarScript;
-    private Messages messagesScript;
-
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Zorg ervoor dat dit object niet wordt vernietigd bij het laden van een nieuwe scene
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
     }
-
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        if (HealthBar != null)
-        {
-            healthBarScript = HealthBar.GetComponent<HealthBar>();
-        }
 
-        if (Messages != null)
-        {
-            messagesScript = Messages.GetComponent<Messages>();
-        }
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
     public void UpdateHealth(int current, int max)
     {
-        if (healthBarScript != null)
-        {
-            healthBarScript.SetValues(current, max);
-        }
+        HealthBar.GetComponent<HealthBar>().SetValues(current, max);
     }
 
     public void AddMessage(string message, Color color)
     {
-        if (messagesScript != null)
-        {
-            messagesScript.AddMessage(message, color);
-        }
+        Messages.GetComponent<Messages>().AddMessage(message, color);
     }
 }

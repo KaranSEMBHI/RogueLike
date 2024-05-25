@@ -50,7 +50,8 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         Vector2 direction = controls.Player.Movement.ReadValue<Vector2>();
         Vector2 roundedDirection = new Vector2(Mathf.Round(direction.x), Mathf.Round(direction.y));
         Debug.Log("roundedDirection");
-        Action.Move(GetComponent<Actor>(), roundedDirection);
+        Action.MoveOrHit(GetComponent<Actor>(), roundedDirection);
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
     }
+
 }
