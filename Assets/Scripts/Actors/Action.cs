@@ -5,9 +5,7 @@ using UnityEngine;
 public class Action : MonoBehaviour
 {
     static public void Move(Actor actor, Vector2 direction)
-
     {
-
         // see if someone is at the target position 
 
         Actor target = GameManager.Get.GetActorAtLocation(actor.transform.position

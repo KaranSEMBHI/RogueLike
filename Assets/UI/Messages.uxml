@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 0; position: absolute; bottom: 0; flex-shrink: 0; align-self: center; width: 500px; height: 100px; background-color: rgb(0, 0, 0);">
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label1" style="-unity-font: resource(&apos;Font/Playground&apos;); -unity-font-definition: resource(&apos;Font/Playground SDF&apos;); -unity-font-style: normal;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label2" style="-unity-font: resource(&apos;Font/Playground&apos;); -unity-font-definition: resource(&apos;Font/Playground SDF&apos;); -unity-font-style: normal;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label3" style="-unity-font: resource(&apos;Font/Playground&apos;); -unity-font-definition: resource(&apos;Font/Playground SDF&apos;); -unity-font-style: normal;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label4" style="-unity-font: resource(&apos;Font/Playground&apos;); -unity-font-definition: resource(&apos;Font/Playground SDF&apos;); -unity-font-style: normal;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Label5" style="-unity-font: resource(&apos;Font/Playground&apos;); -unity-font-definition: resource(&apos;Font/Playground SDF&apos;); -unity-font-style: normal;" />
+    </ui:VisualElement>
+</ui:UXML>
