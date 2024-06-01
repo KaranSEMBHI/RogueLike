@@ -43,6 +43,7 @@ public class MapManager : MonoBehaviour
     public int roomMinSize = 6;
     public int maxRooms = 30;
     public int maxEnemies = 2; // Nieuw attribuut voor het maximum aantal vijanden
+    public int maxItems = 2; // Nieuw attribuut voor het maximum aantal items
 
     private void Start()
     {
@@ -54,20 +55,23 @@ public class MapManager : MonoBehaviour
         Tiles = new Dictionary<Vector3Int, TileData>();
         VisibleTiles = new List<Vector3Int>();
 
-        // Set maxEnemies before generating the dungeon
+        // Set maxEnemies and maxItems before generating the dungeon
         maxEnemies = 2;
+        maxItems = 2;
 
         var generator = new DungeonGenerator();
         generator.SetSize(width, height);
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
         generator.SetMaxEnemies(maxEnemies); // Hier wordt maxEnemies ingesteld
+        generator.SetMaxItems(maxItems); // Hier wordt maxItems ingesteld
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
+
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
     public bool IsWalkable(Vector3 position)

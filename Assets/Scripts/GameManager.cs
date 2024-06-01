@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
 
     public List<Actor> Enemies { get; private set; } = new List<Actor>();
 
+    private List<Consumable> items = new List<Consumable>();
+
     private void Awake()
     {
         if (instance == null)
@@ -87,6 +89,47 @@ public class GameManager : MonoBehaviour
             {
                 enemyComponent.RunAI();
             }
+        }
+    }
+
+    public void AddItem(Consumable item)
+    {
+        if (item != null)
+        {
+            items.Add(item);
+            Debug.Log("Item added: " + item.name);
+        }
+        else
+        {
+            Debug.LogWarning("Tried to add a null item.");
+        }
+    }
+
+    // Functie om een item te verwijderen
+    public void RemoveItem(Consumable item)
+    {
+        if (items.Contains(item))
+        {
+            items.Remove(item);
+            Debug.Log("Item removed: " + item.name);
+        }
+        else
+        {
+            Debug.LogWarning("Item not found in the list.");
+        }
+    }
+
+    // Functie om een item te krijgen op een bepaalde locatie
+    public Consumable GetItemAtLocation(int index)
+    {
+        if (index >= 0 && index < items.Count)
+        {
+            return items[index];
+        }
+        else
+        {
+            Debug.LogWarning("Index out of range.");
+            return null;
         }
     }
 }
