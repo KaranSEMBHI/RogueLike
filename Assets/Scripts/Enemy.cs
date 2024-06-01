@@ -10,6 +10,9 @@ public class Enemy : MonoBehaviour
     public bool IsFighting { get; private set; } = false;
     private AStar algorithm;
 
+    // Nieuwe variabele voor 'confused'
+    private int confused = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +49,19 @@ public class Enemy : MonoBehaviour
         // Convert the position of the target to a gridPosition
         Vector3Int gridPosition = MapManager.Get.FloorMap.WorldToCell(Target.transform.position);
 
+        // Check if the enemy is confused
+        if (confused > 0)
+        {
+            // Decrease the confused counter
+            confused--;
+
+            // Show a message indicating confusion
+            UIManager.Instance.AddMessage($"The {name} is confused and cannot act", Color.yellow);
+
+            // Exit the function since the enemy cannot act when confused
+            return;
+        }
+
         // First check if already fighting, because the FieldOfView check costs more CPU
         if (IsFighting || GetComponent<Actor>().FieldOfView.Contains(gridPosition))
         {
@@ -69,4 +85,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // Public functie om de enemy te 'confusen'
+    public void Confuse()
+    {
+        confused = 8;
+    }
 }

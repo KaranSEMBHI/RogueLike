@@ -38,4 +38,17 @@ public class Inventory : MonoBehaviour
             Debug.LogWarning("Item not found in the inventory.");
         }
     }
+
+    public Consumable GetItem(int index)
+    {
+        if (index >= 0 && index < items.Count)
+        {
+            return items[index];
+        }
+        else
+        {
+            Debug.LogError("Ongeldige index om een item op te halen.");
+            return null;
+        }
+    }
 }

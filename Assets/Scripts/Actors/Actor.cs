@@ -18,6 +18,7 @@ public class Actor : MonoBehaviour
     public int HitPoints => hitPoints;
     public int Defense => defense;
     public int Power => power;
+
     private void Start()
     {
         algorithm = new AdamMilVisibility();
@@ -63,6 +64,18 @@ public class Actor : MonoBehaviour
         if (hitPoints == 0)
         {
             Die();
+        }
+    }
+
+    public void Heal(int hp)
+    {
+        int effectiveHealing = Mathf.Min(maxHitPoints - hitPoints, hp); // Bereken effectieve genezing
+        hitPoints += effectiveHealing; // Voeg effectieve genezing toe aan hitpoints
+
+        if (GetComponent<Player>())
+        {
+            UIManager.Instance.UpdateHealth(hitPoints, maxHitPoints); // Update de gezondheidsbalk
+            UIManager.Instance.AddMessage($"You were healed for {effectiveHealing} HP!", Color.green); // Voeg een bericht toe voor de speler
         }
     }
 

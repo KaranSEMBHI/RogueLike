@@ -120,16 +120,29 @@ public class GameManager : MonoBehaviour
     }
 
     // Functie om een item te krijgen op een bepaalde locatie
-    public Consumable GetItemAtLocation(int index)
+    public Consumable GetItemAtPosition(Vector2 position)
     {
-        if (index >= 0 && index < items.Count)
+        foreach (var item in items)
         {
-            return items[index];
+            if ((Vector2)item.transform.position == position)
+            {
+                return item;
+            }
         }
-        else
+        return null;
+    }
+
+    // Functie om nabije vijanden te krijgen
+    public List<Actor> GetNearbyEnemies(Vector3 location)
+    {
+        List<Actor> nearbyEnemies = new List<Actor>();
+        foreach (var enemy in Enemies)
         {
-            Debug.LogWarning("Index out of range.");
-            return null;
+            if (Vector3.Distance(enemy.transform.position, location) < 5)
+            {
+                nearbyEnemies.Add(enemy);
+            }
         }
+        return nearbyEnemies;
     }
 }
