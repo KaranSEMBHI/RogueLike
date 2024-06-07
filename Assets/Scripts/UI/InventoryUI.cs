@@ -1,71 +1,63 @@
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine;
+using System.Linq;
 
 public class InventoryUI : MonoBehaviour
 {
-    // Singleton instance
-    public static InventoryUI Instance;
+    public Label[] labels = new Label[8];
+    public VisualElement root;
+    public int selected;
+    public int numItems;
 
-    public Label[] labels = new Label[8]; // Array voor 8 labels
-    public VisualElement root; // Variabele voor root element
-    private int selected; // Variabele voor geselecteerd element
-    private int numItems; // Variabele voor aantal items in de lijst
+    public int Selected { get => selected; }
 
-    // Public getter voor de geselecteerde waarde
-    public int Selected
+    // Start is called before the first frame update
+    void Start()
     {
-        get { return selected; }
-    }
+        root = GetComponent<UIDocument>().rootVisualElement;
+        labels[0] = root.Q<Label>("Item1");
+        labels[1] = root.Q<Label>("Item2");
+        labels[2] = root.Q<Label>("Item3");
+        labels[3] = root.Q<Label>("Item4");
+        labels[4] = root.Q<Label>("Item5");
+        labels[5] = root.Q<Label>("Item6");
+        labels[6] = root.Q<Label>("Item7");
+        labels[7] = root.Q<Label>("Item8");
 
-    // Functie om alle labels leeg te maken
-    private void Clear()
-    {
-        foreach (var label in labels)
-        {
-            label.text = string.Empty;
-        }
-    }
-
-    private void Awake()
-    {
-        // Singleton pattern instantiation
-        if (Instance == null)
-            Instance = this;
-        else if (Instance != this)
-            Destroy(gameObject);
-    }
-
-    private void Start()
-    {
-        // Labels in de array opslaan (veronderstellend dat de labels in de volgorde Item1, Item2, ..., Item8 zijn)
-        for (int i = 0; i < labels.Length; i++)
-        {
-            labels[i] = root.Q<Label>($"Item{i + 1}");
-        }
-
-        // Clear uitvoeren en GUI verbergen
         Clear();
-        Hide();
+        root.style.display = DisplayStyle.None;
     }
 
-    // Functie om het geselecteerde item bij te werken
-    private void UpdateSelected()
+    public void Clear()
     {
         for (int i = 0; i < labels.Length; i++)
         {
-            if (i == selected)
-            {
-                labels[i].style.backgroundColor = Color.green; // Geselecteerde label krijgt groene achtergrond
-            }
-            else
-            {
-                labels[i].style.backgroundColor = Color.clear; // Andere labels krijgen transparante achtergrond
-            }
+            labels[i].text = "";
         }
     }
 
-    // Functie om het volgende item te selecteren
+    public void Show(List<Consumable> list)
+    {
+        selected = 0;
+        numItems = list.Count;
+        Clear();
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            labels[i].text = list[i].name;
+        }
+        UpdateSelected();
+
+        root.style.display = DisplayStyle.Flex;
+    }
+
+    public void Hide()
+    {
+        root.style.display = DisplayStyle.None;
+    }
+
     public void SelectNextItem()
     {
         if (selected < numItems - 1)
@@ -75,7 +67,6 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    // Functie om het vorige item te selecteren
     public void SelectPreviousItem()
     {
         if (selected > 0)
@@ -85,32 +76,19 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    // Functie om de inventory GUI te tonen
-    public void Show(List<Consumable> list)
+    private void UpdateSelected()
     {
-        selected = 0; // Geselecteerde waarde op 0 zetten
-        numItems = list.Count; // Aantal items instellen op de lengte van de lijst
-        Clear(); // Labels leeg maken
-
-        // Namen van de labels instellen op de namen van de items in de lijst
-        for (int i = 0; i < numItems && i < labels.Length; i++)
+        for (int i = 0; i < labels.Length; i++)
         {
-            labels[i].text = list[i].name;
+            if (i == selected)
+            {
+                labels[i].style.backgroundColor = Color.green;
+            }
+            else
+            {
+                labels[i].style.backgroundColor = Color.clear;
+            }
         }
-
-        UpdateSelected(); // Geselecteerde item bijwerken
-        ShowInventory(); // Toon de inventory GUI
     }
 
-    // Functie om de inventory GUI te verbergen
-    public void Hide()
-    {
-        root.style.display = DisplayStyle.None; // GUI verbergen
-    }
-
-    // Functie om de inventory GUI te tonen
-    private void ShowInventory()
-    {
-        root.style.display = DisplayStyle.Flex; // GUI tonen
-    }
 }

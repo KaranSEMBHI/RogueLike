@@ -2,24 +2,19 @@ using UnityEngine;
 
 public class Consumable : MonoBehaviour
 {
-        public enum ItemType
-        {
-            HealthPotion,
-            Fireball,
-            ScrollOfConfusion
-        }
+    public enum ItemType
+    {
+        HealthPotion,
+        Fireball,
+        ScrollOfConfusion
+    }
 
-        [SerializeField]
-        private ItemType type;
+    [SerializeField] private ItemType type;
 
-        public ItemType Type
-        {
-            get { return type; }
-        }
+    public ItemType Type { get => type; }
 
-        private void Start()
-        {
-            // Voeg dit item toe aan de lijst in de GameManager bij het starten
-            GameManager.Get.AddItem(this);
-        }
+    private void Start()
+    {
+        GameManager.Get.AddItem(this);
+    }
 }

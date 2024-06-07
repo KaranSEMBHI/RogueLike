@@ -6,46 +6,51 @@ public class Action : MonoBehaviour
 {
     static public void MoveOrHit(Actor actor, Vector2 direction)
     {
+        // see if someone is at the target position
         Actor target = GameManager.Get.GetActorAtLocation(actor.transform.position + (Vector3)direction);
+
+        // if not, we can move
         if (target == null)
         {
-            actor.Move(direction);
-            actor.UpdateFieldOfView();
+            Move(actor, direction);
         }
         else
         {
             Hit(actor, target);
         }
+
+        // end turn in case this is the player
         EndTurn(actor);
     }
     static public void Move(Actor actor, Vector2 direction)
     {
-        Actor target = GameManager.Get.GetActorAtLocation(actor.transform.position + (Vector3)direction);
-        if (target == null)
-        {
-            actor.Move(direction);
-            actor.UpdateFieldOfView();
-        }
-        EndTurn(actor);
+        actor.Move(direction);
+        actor.UpdateFieldOfView();
     }
+
+    static public void Hit(Actor actor, Actor target)
+    {
+        int damage = actor.Power - target.Defense;
+        string description = $"{actor.name} attacks {target.name}";
+        Color color = actor.GetComponent<Player>() ? Color.white : Color.red;
+
+        if (damage > 0)
+        {
+            UIManager.Get.AddMessage($"{description} for {damage} hit points.", color);
+            target.DoDamage(damage);
+        }
+        else
+        {
+            UIManager.Get.AddMessage($"{description} but does no damage.", color);
+        }
+    }
+
     static private void EndTurn(Actor actor)
     {
-        if (actor.GetComponent<Player>() != null)
+        if (actor.GetComponent<Player>())
         {
             GameManager.Get.StartEnemyTurn();
         }
     }
-    static public void Hit(Actor actor, Actor target)
-    {
-        int damage = actor.Power - target.Defense;
-        if (damage > 0)
-        {
-            target.DoDamage(damage);
-            UIManager.Instance.AddMessage($"{actor.name} hits {target.name} for {damage} damage.", actor.GetComponent<Player>() ? Color.white : Color.red);
-        }
-        else
-        {
-            UIManager.Instance.AddMessage($"{actor.name} hits {target.name} but does no damage.", actor.GetComponent<Player>() ? Color.white : Color.red);
-        }
-    }
+
 }

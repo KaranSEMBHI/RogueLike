@@ -6,12 +6,6 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
-    public Actor Player { get; set; }
-
-    public List<Actor> Enemies { get; private set; } = new List<Actor>();
-
-    private List<Consumable> items = new List<Consumable>();
-
     private void Awake()
     {
         if (instance == null)
@@ -26,22 +20,28 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Get { get => instance; }
 
-    public Actor GetActorAtLocation(Vector3 location)
+    public Actor Player;
+    public List<Actor> Enemies = new List<Actor>();
+    public List<Consumable> Items = new List<Consumable>();
+
+    public GameObject CreateGameObject(string name, Vector2 position)
     {
-        if (Player != null && Player.transform.position == location)
-        {
-            return Player;
-        }
+        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
+        actor.name = name;
+        return actor;
+    }
 
-        foreach (var enemy in Enemies)
-        {
-            if (enemy != null && enemy.transform.position == location)
-            {
-                return enemy;
-            }
-        }
+    public void AddItem(Consumable item)
+    {
+        Items.Add(item);
+    }
 
-        return null;
+    public void RemoveItem(Consumable item)
+    {
+        if (Items.Contains(item))
+        {
+            Items.Remove(item);
+        }
     }
 
     public void AddEnemy(Actor enemy)
@@ -54,95 +54,58 @@ public class GameManager : MonoBehaviour
         if (Enemies.Contains(enemy))
         {
             Enemies.Remove(enemy);
-            Destroy(enemy.gameObject); // Optional: Destroy the enemy GameObject
         }
-    }
-
-    public GameObject CreateActor(string name, Vector2 position)
-    {
-        GameObject actor = Instantiate(Resources.Load<GameObject>($"Prefabs/{name}"), new Vector3(position.x + 0.5f, position.y + 0.5f, 0), Quaternion.identity);
-
-        if (name == "Player")
-        {
-            Player = actor.GetComponent<Actor>();
-        }
-        else
-        {
-            AddEnemy(actor.GetComponent<Actor>());
-        }
-
-        actor.name = name;
-        return actor;
-    }
-
-    private void Start()
-    {
-        Player = GetComponent<Actor>();
     }
 
     public void StartEnemyTurn()
     {
         foreach (var enemy in Enemies)
         {
-            Enemy enemyComponent = enemy.GetComponent<Enemy>();
-            if (enemyComponent != null)
-            {
-                enemyComponent.RunAI();
-            }
+            enemy.GetComponent<Enemy>().RunAI();
         }
     }
 
-    public void AddItem(Consumable item)
+    public Actor GetActorAtLocation(Vector3 location)
     {
-        if (item != null)
+        if (Player.transform.position == location)
         {
-            items.Add(item);
-            Debug.Log("Item added: " + item.name);
+            return Player;
         }
         else
         {
-            Debug.LogWarning("Tried to add a null item.");
-        }
-    }
-
-    // Functie om een item te verwijderen
-    public void RemoveItem(Consumable item)
-    {
-        if (items.Contains(item))
-        {
-            items.Remove(item);
-            Debug.Log("Item removed: " + item.name);
-        }
-        else
-        {
-            Debug.LogWarning("Item not found in the list.");
-        }
-    }
-
-    // Functie om een item te krijgen op een bepaalde locatie
-    public Consumable GetItemAtPosition(Vector2 position)
-    {
-        foreach (var item in items)
-        {
-            if ((Vector2)item.transform.position == position)
+            foreach (Actor enemy in Enemies)
             {
-                return item;
+                if (enemy.transform.position == location)
+                {
+                    return enemy;
+                }
             }
         }
         return null;
     }
 
-    // Functie om nabije vijanden te krijgen
     public List<Actor> GetNearbyEnemies(Vector3 location)
     {
-        List<Actor> nearbyEnemies = new List<Actor>();
-        foreach (var enemy in Enemies)
+        var result = new List<Actor>();
+        foreach (Actor enemy in Enemies)
         {
             if (Vector3.Distance(enemy.transform.position, location) < 5)
             {
-                nearbyEnemies.Add(enemy);
+                result.Add(enemy);
             }
         }
-        return nearbyEnemies;
+        return result;
+    }
+
+    public Consumable GetItemAtLocation(Vector3 location)
+    {
+        foreach (var item in Items)
+        {
+            if (item.transform.position == location)
+            {
+                return item;
+            }
+        }
+        return null;
     }
 }

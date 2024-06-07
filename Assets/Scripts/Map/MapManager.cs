@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class MapManager : MonoBehaviour
 {
@@ -36,14 +37,15 @@ public class MapManager : MonoBehaviour
     public List<Vector3Int> VisibleTiles;
     public Dictionary<Vector3Int, TileData> Tiles;
 
+
     [Header("Map Settings")]
     public int width = 80;
     public int height = 45;
     public int roomMaxSize = 10;
     public int roomMinSize = 6;
     public int maxRooms = 30;
-    public int maxEnemies = 2; // Nieuw attribuut voor het maximum aantal vijanden
-    public int maxItems = 2; // Nieuw attribuut voor het maximum aantal items
+    public int maxEnemies = 2;
+    public int maxItems = 2;
 
     private void Start()
     {
@@ -55,22 +57,20 @@ public class MapManager : MonoBehaviour
         Tiles = new Dictionary<Vector3Int, TileData>();
         VisibleTiles = new List<Vector3Int>();
 
-        // Set maxEnemies and maxItems before generating the dungeon
-        maxEnemies = 2;
-        maxItems = 2;
-
         var generator = new DungeonGenerator();
         generator.SetSize(width, height);
         generator.SetRoomSize(roomMinSize, roomMaxSize);
         generator.SetMaxRooms(maxRooms);
-        generator.SetMaxEnemies(maxEnemies); // Hier wordt maxEnemies ingesteld
-        generator.SetMaxItems(maxItems); // Hier wordt maxItems ingesteld
+        generator.SetMaxEnemies(maxEnemies);
+        generator.SetMaxItems(maxItems);
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
+
+
 
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 

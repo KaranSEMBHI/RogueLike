@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,39 +8,35 @@ public class Messages : MonoBehaviour
     private Label[] labels = new Label[5];
     private VisualElement root;
 
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        // Obtain the UIDocument component
-        var uiDocument = GetComponent<UIDocument>();
-        root = uiDocument.rootVisualElement;
+        root = GetComponent<UIDocument>().rootVisualElement;
+        labels[0] = root.Q<Label>("Label1");
+        labels[1] = root.Q<Label>("Label2");
+        labels[2] = root.Q<Label>("Label3");
+        labels[3] = root.Q<Label>("Label4");
+        labels[4] = root.Q<Label>("Label5");
 
-        // Initialize the labels array
-        for (int i = 0; i < labels.Length; i++)
-        {
-            labels[i] = root.Q<Label>($"label{i + 1}");
-        }
-
-        // Clear all labels
         Clear();
 
-        // Add a welcome message
-        AddMessage("Welcome to the dungeon, Adventurer!", Color.yellow);
+        AddMessage("Welcome to the dungeon, Adventurer!", Color.magenta);
     }
 
     public void Clear()
     {
         foreach (var label in labels)
         {
-            label.text = string.Empty;
+            label.text = "";
         }
     }
 
     public void MoveUp()
     {
-        for (int i = labels.Length - 1; i > 0; i--)
+        for (int i = 3; i >= 0; i--)
         {
-            labels[i].text = labels[i - 1].text;
-            labels[i].style.color = labels[i - 1].style.color;
+            labels[i + 1].text = labels[i].text;
+            labels[i + 1].style.color = labels[i].style.color;
         }
     }
 
@@ -46,6 +44,6 @@ public class Messages : MonoBehaviour
     {
         MoveUp();
         labels[0].text = content;
-        labels[0].style.color = new StyleColor(color);
+        labels[0].style.color = color;
     }
 }

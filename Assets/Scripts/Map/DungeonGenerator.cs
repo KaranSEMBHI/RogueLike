@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
 {
-    public int maxEnemies;
-    public int maxItems;
     private int width, height;
     private int maxRoomSize, minRoomSize;
     private int maxRooms;
+    private int maxEnemies;
+    private int maxItems;
+
     List<Room> rooms = new List<Room>();
 
     public void SetSize(int width, int height)
@@ -33,7 +35,7 @@ public class DungeonGenerator : MonoBehaviour
         maxEnemies = max;
     }
 
-    public void SetMaxItems(int max) // Add SetMaxItems method
+    public void SetMaxItems(int max)
     {
         maxItems = max;
     }
@@ -77,25 +79,20 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         SetFloorTile(new Vector3Int(x, y, 0));
                     }
+
                 }
             }
 
-            // create a corridor between rooms
+            // create a coridor between rooms
             if (rooms.Count != 0)
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
-
-            // Place enemies in the room before adding it to the list of rooms
             PlaceEnemies(room, maxEnemies);
-
-            // Place items in the room before adding it to the list of rooms
             PlaceItems(room, maxItems);
-
             rooms.Add(room);
         }
-
-        var player = GameManager.Get.CreateActor("Player", rooms[0].Center());
+        var player = GameManager.Get.CreateGameObject("Player", rooms[0].Center());
     }
 
     private bool TrySetWallTile(Vector3Int pos)
@@ -166,46 +163,51 @@ public class DungeonGenerator : MonoBehaviour
 
     private void PlaceEnemies(Room room, int maxEnemies)
     {
-        // the number of enemies we want 
+        // the number of enemies we want
         int num = Random.Range(0, maxEnemies + 1);
 
         for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and subtract by 1 
+            // The borders of the room are walls, so add and substract by 1
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different enemies 
+            // create different enemies
             if (Random.value < 0.5f)
             {
-                GameManager.Get.CreateActor("King", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("Bear", new Vector2(x, y));
             }
             else
             {
-                GameManager.Get.CreateActor("Pipo", new Vector2(x, y));
+                GameManager.Get.CreateGameObject("Tiger", new Vector2(x, y));
             }
         }
     }
 
     private void PlaceItems(Room room, int maxItems)
     {
-        // the number of items we want 
+        // the number of items we want
         int num = Random.Range(0, maxItems + 1);
 
         for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and subtract by 1 
+            // The borders of the room are walls, so add and substract by 1
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different items 
-            if (Random.value < 0.5f)
+            // create different items
+            float value = Random.value;
+            if (value > 0.8f)
             {
-                GameManager.Get.CreateActor("HealthPotion", new Vector2(x, y)); // Ensure the prefab exists
+                GameManager.Get.CreateGameObject("Scroll", new Vector2(x, y));
+            }
+            else if (value > 0.5f)
+            {
+                GameManager.Get.CreateGameObject("Fireball", new Vector2(x, y));
             }
             else
             {
-                GameManager.Get.CreateActor("ScrollOfConfusion", new Vector2(x, y)); // Ensure the prefab exists
+                GameManager.Get.CreateGameObject("HealthPotion", new Vector2(x, y));
             }
         }
     }
