@@ -36,4 +36,14 @@ public class UIManager : MonoBehaviour
     {
         Messages.GetComponent<Messages>().AddMessage(message, color);
     }
+
+    public void UpdateLevel(int level)
+    {
+        HealthBar.GetComponent<HealthBar>().SetLevel(level);
+    }
+
+    public void UpdateXP(int xp)
+    {
+        HealthBar.GetComponent<HealthBar>().SetXP(xp);
+    }
 }

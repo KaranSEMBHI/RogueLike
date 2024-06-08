@@ -217,6 +217,7 @@ MonoBehaviour:
   maxRooms: 30
   maxEnemies: 2
   maxItems: 2
+  floor: 0
 --- !u!156049354 &408639669
 Grid:
   m_ObjectHideFlags: 0
@@ -735,6 +736,7 @@ MonoBehaviour:
   Player: {fileID: 8276185680282233743, guid: e25361596e45a964bab8298e862445a1, type: 3}
   Enemies: []
   Items: []
+  Ladders: []
 --- !u!4 &1684302755
 Transform:
   m_ObjectHideFlags: 0

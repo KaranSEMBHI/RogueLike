@@ -18,11 +18,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        // Create a new ladder object
+        GameObject ladderObject = new GameObject("Ladder");
+        Ladder newLadder = ladderObject.AddComponent<Ladder>();
+
+        // Optionally set the properties of the ladder
+        newLadder.Up = true; // Example setting, change as needed
+
+        // Position the ladder at a desired location
+        ladderObject.transform.position = new Vector3(0, 0, 0); // Example position, change as needed
+
+        // Add the ladder to the GameManager
+        AddLadder(newLadder);
+    }
+
     public static GameManager Get { get => instance; }
 
     public Actor Player;
     public List<Actor> Enemies = new List<Actor>();
     public List<Consumable> Items = new List<Consumable>();
+    public List<Ladder> Ladders = new List<Ladder>();
 
     public GameObject CreateGameObject(string name, Vector2 position)
     {
@@ -56,6 +73,24 @@ public class GameManager : MonoBehaviour
             Enemies.Remove(enemy);
         }
     }
+
+    public void AddLadder(Ladder ladder)
+    {
+        Ladders.Add(ladder);
+    }
+
+    public Ladder GetLadderAtLocation(Vector3 location)
+    {
+        foreach (var ladder in Ladders)
+        {
+            if (ladder.transform.position == location)
+            {
+                return ladder;
+            }
+        }
+        return null;
+    }
+
 
     public void StartEnemyTurn()
     {
@@ -108,4 +143,5 @@ public class GameManager : MonoBehaviour
         }
         return null;
     }
+
 }

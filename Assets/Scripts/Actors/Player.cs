@@ -165,7 +165,7 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
                     var enemies = GameManager.Get.GetNearbyEnemies(transform.position);
                     foreach (var enemy in enemies)
                     {
-                        enemy.DoDamage(8);
+                        enemy.DoDamage(8, GetComponent<Actor>()); // Pass the player as the attacker
                         UIManager.Get.AddMessage($"Your fireball damaged the {enemy.name} for 8HP", Color.magenta);
                     }
                     break;
@@ -192,8 +192,4 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         Action.MoveOrHit(GetComponent<Actor>(), roundedDirection);
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
     }
-
-
-
-
 }
