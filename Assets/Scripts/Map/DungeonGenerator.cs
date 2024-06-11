@@ -8,8 +8,22 @@ public class DungeonGenerator : MonoBehaviour
     private int maxRooms;
     private int maxEnemies;
     private int maxItems;
+    private int currentFloor; // Nieuwe variabele voor de huidige verdieping
 
     List<Room> rooms = new List<Room>();
+
+    // Lijst van vijanden in volgorde van sterkte
+    private readonly List<string> enemyNames = new List<string>
+    {
+        "Ant",
+        "Bomboclat",
+        "Ding",
+        "Dragpn",
+        "Hond",
+        "Ja",
+        "Tijger",
+        "WOlf"
+    };
 
     public void SetSize(int width, int height)
     {
@@ -38,6 +52,11 @@ public class DungeonGenerator : MonoBehaviour
         maxItems = max;
     }
 
+    public void SetCurrentFloor(int floor)
+    {
+        this.currentFloor = floor;
+    }
+
     public void Generate()
     {
         rooms.Clear();
@@ -52,13 +71,13 @@ public class DungeonGenerator : MonoBehaviour
 
             var room = new Room(roomX, roomY, roomWidth, roomHeight);
 
-            // if the room overlaps with another room, discard it
+            // Als de kamer overlapt met een andere kamer, negeer het
             if (room.Overlaps(rooms))
             {
                 continue;
             }
 
-            // add tiles make the room visible on the tilemap
+            // Voeg tegels toe om de kamer zichtbaar te maken op de tilemap
             for (int x = roomX; x < roomX + roomWidth; x++)
             {
                 for (int y = roomY; y < roomY + roomHeight; y++)
@@ -77,32 +96,58 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         SetFloorTile(new Vector3Int(x, y, 0));
                     }
-
                 }
             }
 
-            // create a coridor between rooms
+            // Maak een gang tussen kamers
             if (rooms.Count != 0)
             {
                 TunnelBetween(rooms[rooms.Count - 1], room);
             }
+
             PlaceEnemies(room, maxEnemies);
             PlaceItems(room, maxItems);
             rooms.Add(room);
         }
-        var player = GameManager.Get.CreateGameObject("Player", rooms[0].Center());
+
+        // Plaats de speler en ladders op basis van de huidige verdieping
+        if (rooms.Count > 0)
+        {
+            Vector3Int startPos = new Vector3Int(rooms[0].Center().x, rooms[0].Center().y, 0);
+            Vector3Int endPos = new Vector3Int(rooms[rooms.Count - 1].Center().x, rooms[rooms.Count - 1].Center().y, 0);
+
+            // Plaats een ladder naar beneden in de laatste kamer
+            PlaceLadderDown(endPos);
+
+            // Plaats de speler in de eerste kamer
+            var player = GameObject.Find("Player");
+            if (player != null)
+            {
+                player.transform.position = new Vector3(startPos.x, startPos.y, 0);
+            }
+            else
+            {
+                GameManager.Get.CreateGameObject("Player", new Vector2(startPos.x, startPos.y));
+            }
+
+            // Als de huidige verdieping groter is dan 0, plaats een ladder naar boven in de eerste kamer
+            if (currentFloor > 0)
+            {
+                PlaceLadderUp(startPos);
+            }
+        }
     }
 
     private bool TrySetWallTile(Vector3Int pos)
     {
-        // if this is a floor, it should not be a wall
+        // Als dit een vloer is, mag het geen muur zijn
         if (MapManager.Get.FloorMap.GetTile(pos))
         {
             return false;
         }
         else
         {
-            // if not, it can be a wall
+            // Anders kan het een muur zijn
             MapManager.Get.ObstacleMap.SetTile(pos, MapManager.Get.WallTile);
             return true;
         }
@@ -110,12 +155,12 @@ public class DungeonGenerator : MonoBehaviour
 
     private void SetFloorTile(Vector3Int pos)
     {
-        // this tile should be walkable, so remove every obstacle
+        // Deze tegel moet begaanbaar zijn, dus verwijder elk obstakel
         if (MapManager.Get.ObstacleMap.GetTile(pos))
         {
             MapManager.Get.ObstacleMap.SetTile(pos, null);
         }
-        // set the floor tile
+        // Zet de vloertegel
         MapManager.Get.FloorMap.SetTile(pos, MapManager.Get.FloorTile);
     }
 
@@ -127,21 +172,21 @@ public class DungeonGenerator : MonoBehaviour
 
         if (Random.value < 0.5f)
         {
-            // move horizontally, then vertically
+            // Beweeg horizontaal, dan verticaal
             tunnelCorner = new Vector2Int(newRoomCenter.x, oldRoomCenter.y);
         }
         else
         {
-            // move vertically, then horizontally
+            // Beweeg verticaal, dan horizontaal
             tunnelCorner = new Vector2Int(oldRoomCenter.x, newRoomCenter.y);
         }
 
-        // Generate the coordinates for this tunnel
+        // Genereer de coördinaten voor deze tunnel
         List<Vector2Int> tunnelCoords = new List<Vector2Int>();
         BresenhamLine.Compute(oldRoomCenter, tunnelCorner, tunnelCoords);
         BresenhamLine.Compute(tunnelCorner, newRoomCenter, tunnelCoords);
 
-        // Set the tiles for this tunnel
+        // Zet de tegels voor deze tunnel
         for (int i = 0; i < tunnelCoords.Count; i++)
         {
             SetFloorTile(new Vector3Int(tunnelCoords[i].x, tunnelCoords[i].y));
@@ -161,39 +206,38 @@ public class DungeonGenerator : MonoBehaviour
 
     private void PlaceEnemies(Room room, int maxEnemies)
     {
-        // the number of enemies we want
+        // Het aantal vijanden dat we willen
         int num = Random.Range(0, maxEnemies + 1);
 
         for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and substract by 1
+            // De grenzen van de kamer zijn muren, dus tel er 1 bij op en trek er 1 vanaf
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different enemies
-            if (Random.value < 0.5f)
-            {
-                GameManager.Get.CreateGameObject("Bear", new Vector2(x, y));
-            }
-            else
-            {
-                GameManager.Get.CreateGameObject("Tiger", new Vector2(x, y));
-            }
+            // De kans op sterkere vijanden neemt toe met de verdieping
+            float difficultyModifier = Mathf.Clamp01(currentFloor / 10f);
+            int enemyIndex = Mathf.FloorToInt(difficultyModifier * (enemyNames.Count - 1));
+
+            // Kies een willekeurige vijand uit de lijst op basis van de huidige verdieping
+            string enemyName = enemyNames[Random.Range(0, enemyIndex + 1)];
+
+            GameManager.Get.CreateGameObject(enemyName, new Vector2(x, y));
         }
     }
 
     private void PlaceItems(Room room, int maxItems)
     {
-        // the number of items we want
+        // Het aantal items dat we willen
         int num = Random.Range(0, maxItems + 1);
 
         for (int counter = 0; counter < num; counter++)
         {
-            // The borders of the room are walls, so add and substract by 1
+            // De grenzen van de kamer zijn muren, dus tel er 1 bij op en trek er 1 vanaf
             int x = Random.Range(room.X + 1, room.X + room.Width - 1);
             int y = Random.Range(room.Y + 1, room.Y + room.Height - 1);
 
-            // create different items
+            // Maak verschillende items
             float value = Random.value;
             if (value > 0.8f)
             {
@@ -208,5 +252,17 @@ public class DungeonGenerator : MonoBehaviour
                 GameManager.Get.CreateGameObject("HealthPotion", new Vector2(x, y));
             }
         }
+    }
+
+    private void PlaceLadderDown(Vector3Int position)
+    {
+        // Plaats een ladder naar beneden op de gegeven positie
+        GameManager.Get.CreateGameObject("PijlOmlaag", new Vector2(position.x, position.y));
+    }
+
+    private void PlaceLadderUp(Vector3Int position)
+    {
+        // Plaats een ladder naar boven op de gegeven positie
+        GameManager.Get.CreateGameObject("PijlOmhoog", new Vector2(position.x, position.y));
     }
 }

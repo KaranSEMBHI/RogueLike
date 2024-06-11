@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4545257528707785615}
   - component: {fileID: 4606244721767274981}
+  - component: {fileID: -3008175639548761585}
   m_Layer: 0
   m_Name: Dead
   m_TagString: Untagged
@@ -84,3 +85,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-3008175639548761585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3205722077508048772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da3dd83542e3e5f4c9d8ac1646360478, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  epitaph: Here lies a brave soul.
+  tombstoneColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}

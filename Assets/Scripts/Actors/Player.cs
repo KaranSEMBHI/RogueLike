@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +10,7 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
     private bool inventoryIsOpen = false;
     private bool droppingItem = false;
     private bool usingItem = false;
+    private bool isOnLadder = false;
 
     private void Awake()
     {
@@ -49,7 +50,6 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
                 {
                     UIManager.Get.Inventory.SelectNextItem();
                 }
-
             }
             else
             {
@@ -75,7 +75,6 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
                 {
                     UIManager.Get.AddMessage("Your inventory is full.", Color.red);
                 }
-
             }
             else
             {
@@ -158,30 +157,33 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         switch (item.Type)
         {
             case Consumable.ItemType.HealthPotion:
-                GetComponent<Actor>().Heal(5);
+                int healingAmount = 50; // Set your actual healing amount
+                GameManager.Get.Player.Heal(healingAmount);
+                UIManager.Get.AddMessage($"You used a Health Potion and gained {healingAmount} HP!", Color.green);
                 break;
+
             case Consumable.ItemType.Fireball:
+                int fireballDamage = 30; // Set your actual fireball damage
+                List<Actor> nearbyEnemies = GameManager.Get.GetNearbyEnemies(transform.position);
+                foreach (Actor enemy in nearbyEnemies)
                 {
-                    var enemies = GameManager.Get.GetNearbyEnemies(transform.position);
-                    foreach (var enemy in enemies)
-                    {
-                        enemy.DoDamage(8, GetComponent<Actor>()); // Pass the player as the attacker
-                        UIManager.Get.AddMessage($"Your fireball damaged the {enemy.name} for 8HP", Color.magenta);
-                    }
-                    break;
+                    enemy.DoDamage(fireballDamage, GameManager.Get.Player);  // Pass the attacker as the second argument
                 }
+                UIManager.Get.AddMessage($"You used a Fireball and dealt {fireballDamage} damage to nearby enemies!", Color.red);
+                break;
 
             case Consumable.ItemType.ScrollOfConfusion:
+                List<Actor> enemiesToConfuse = GameManager.Get.GetNearbyEnemies(transform.position);
+                foreach (Actor enemy in enemiesToConfuse)
                 {
-                    var enemies = GameManager.Get.GetNearbyEnemies(transform.position);
-                    foreach (var enemy in enemies)
-                    {
-                        enemy.GetComponent<Enemy>().Confuse();
-                        UIManager.Get.AddMessage($"Your scroll confused the {enemy.name}.", Color.magenta);
-                    }
-                    break;
+                    enemy.GetComponent<Enemy>().Confuse();
                 }
+                UIManager.Get.AddMessage($"You used a Scroll of Confusion and confused nearby enemies!", Color.yellow);
+                break;
 
+            default:
+                Debug.LogWarning("Unknown item type used.");
+                break;
         }
     }
 
@@ -192,4 +194,34 @@ public class Player : MonoBehaviour, Controls.IPlayerActions
         Action.MoveOrHit(GetComponent<Actor>(), roundedDirection);
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -5);
     }
+    public void CheckForLadder()
+    {
+        Vector3 playerPosition = transform.position;
+        Ladder ladder = GameManager.Get.GetLadderAtLocation(playerPosition);
+
+        if (ladder != null)
+        {
+            if (ladder.Up)
+            {
+                MapManager.Get.MoveUp();
+            }
+            else
+            {
+                MapManager.Get.MoveDown();
+            }
+        }
+    }
+
+
+    // Function to handle ladder usage and level change
+    public void OnLadder(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Debug.Log("wordt geclicked");
+            CheckForLadder();
+        }
+    }
+
+    
 }

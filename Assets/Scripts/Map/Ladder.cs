@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Ladder : MonoBehaviour
 {
-    [SerializeField]
-    private bool up;
+    public bool Up; // Public bool to be set from the editor
 
-    public bool Up
+    void Start()
     {
-        get { return up; }
-        set { up = value; }
+        // Add this ladder to the GameManager
+        GameManager.Get.AddLadder(this);
     }
 }

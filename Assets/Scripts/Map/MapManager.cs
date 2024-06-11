@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class MapManager : MonoBehaviour
 {
@@ -13,6 +11,7 @@ public class MapManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject); // Optioneel: Houd MapManager in stand bij scèneovergangen
         }
         else if (instance != this)
         {
@@ -37,7 +36,6 @@ public class MapManager : MonoBehaviour
     public List<Vector3Int> VisibleTiles;
     public Dictionary<Vector3Int, TileData> Tiles;
 
-
     [Header("Map Settings")]
     public int width = 80;
     public int height = 45;
@@ -46,6 +44,7 @@ public class MapManager : MonoBehaviour
     public int maxRooms = 30;
     public int maxEnemies = 2;
     public int maxItems = 2;
+    public int floor = 0; // Nieuwe variabele voor de huidige verdieping
 
     private void Start()
     {
@@ -54,6 +53,11 @@ public class MapManager : MonoBehaviour
 
     private void GenerateDungeon()
     {
+        // Maak de bestaande tegels leeg voordat de kerker wordt gegenereerd
+        FloorMap.ClearAllTiles();
+        ObstacleMap.ClearAllTiles();
+        FogMap.ClearAllTiles();
+
         Tiles = new Dictionary<Vector3Int, TileData>();
         VisibleTiles = new List<Vector3Int>();
 
@@ -63,14 +67,13 @@ public class MapManager : MonoBehaviour
         generator.SetMaxRooms(maxRooms);
         generator.SetMaxEnemies(maxEnemies);
         generator.SetMaxItems(maxItems);
+        generator.SetCurrentFloor(floor); // Stel de huidige verdieping in
         generator.Generate();
 
         AddTileMapToDictionary(FloorMap);
         AddTileMapToDictionary(ObstacleMap);
         SetupFogMap();
     }
-
-
 
     public bool InBounds(int x, int y) => 0 <= x && x < width && 0 <= y && y < height;
 
@@ -143,6 +146,23 @@ public class MapManager : MonoBehaviour
             Tiles[pos].IsVisible = true;
             FogMap.SetColor(pos, Color.clear);
             VisibleTiles.Add(pos);
+        }
+    }
+
+    public void MoveUp()
+    {
+        GameManager.Get.ClearLevel(); // Voeg deze lijn toe
+        floor++; // Verhoog de waarde van floor
+        GenerateDungeon(); // Genereer een nieuwe kerker voor de volgende verdieping
+    }
+
+    public void MoveDown()
+    {
+        if (floor > 0) // Zorg ervoor dat floor niet negatief wordt
+        {
+            GameManager.Get.ClearLevel(); // Voeg deze lijn toe
+            floor--; // Verlaag de waarde van floor
+            GenerateDungeon(); // Genereer een nieuwe kerker voor de vorige verdieping
         }
     }
 }

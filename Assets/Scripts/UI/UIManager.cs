@@ -46,4 +46,5 @@ public class UIManager : MonoBehaviour
     {
         HealthBar.GetComponent<HealthBar>().SetXP(xp);
     }
+
 }
